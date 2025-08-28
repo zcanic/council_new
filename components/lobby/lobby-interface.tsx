@@ -1,5 +1,7 @@
 "use client"
 
+import type React from "react"
+
 import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -19,6 +21,17 @@ export function LobbyInterface({ topics, onTopicClick, onCreateTopic }: LobbyInt
   const [nodePositions, setNodePositions] = useState<
     Array<{ x: number; y: number; size: "small" | "medium" | "large" }>
   >([])
+  const [dragState, setDragState] = useState<{
+    isDragging: boolean
+    dragIndex: number | null
+    startPos: { x: number; y: number }
+    offset: { x: number; y: number }
+  }>({
+    isDragging: false,
+    dragIndex: null,
+    startPos: { x: 0, y: 0 },
+    offset: { x: 0, y: 0 },
+  })
 
   // Generate organic, non-overlapping positions for thought nodes
   useEffect(() => {
@@ -34,9 +47,12 @@ export function LobbyInterface({ topics, onTopicClick, onCreateTopic }: LobbyInt
         const size = topic.participantCount >= 15 ? "large" : topic.participantCount >= 8 ? "medium" : "small"
 
         do {
+          const cardWidth = size === "large" ? 16 : size === "medium" ? 14 : 12 // rem units
+          const cardHeight = size === "large" ? 10 : size === "medium" ? 9 : 8
+
           position = {
-            x: Math.random() * 70 + 10, // 10% to 80% of container width
-            y: Math.random() * 60 + 15, // 15% to 75% of container height
+            x: Math.random() * (85 - cardWidth) + cardWidth / 2, // Account for card width
+            y: Math.random() * (75 - cardHeight) + cardHeight / 2, // Account for card height
             size,
           }
           attempts++
@@ -56,6 +72,48 @@ export function LobbyInterface({ topics, onTopicClick, onCreateTopic }: LobbyInt
 
     setNodePositions(generatePositions())
   }, [topics])
+
+  const handleDragStart = (index: number, event: React.MouseEvent) => {
+    const rect = event.currentTarget.getBoundingClientRect()
+    const containerRect = event.currentTarget.closest(".relative")?.getBoundingClientRect()
+
+    if (!containerRect) return
+
+    setDragState({
+      isDragging: true,
+      dragIndex: index,
+      startPos: { x: event.clientX, y: event.clientY },
+      offset: {
+        x: event.clientX - rect.left,
+        y: event.clientY - rect.top,
+      },
+    })
+  }
+
+  const handleDragMove = (event: React.MouseEvent) => {
+    if (!dragState.isDragging || dragState.dragIndex === null) return
+
+    const containerRect = event.currentTarget.getBoundingClientRect()
+    const newX = ((event.clientX - dragState.offset.x - containerRect.left) / containerRect.width) * 100
+    const newY = ((event.clientY - dragState.offset.y - containerRect.top) / containerRect.height) * 100
+
+    // Boundary constraints
+    const constrainedX = Math.max(5, Math.min(90, newX))
+    const constrainedY = Math.max(5, Math.min(85, newY))
+
+    setNodePositions((prev) =>
+      prev.map((pos, index) => (index === dragState.dragIndex ? { ...pos, x: constrainedX, y: constrainedY } : pos)),
+    )
+  }
+
+  const handleDragEnd = () => {
+    setDragState({
+      isDragging: false,
+      dragIndex: null,
+      startPos: { x: 0, y: 0 },
+      offset: { x: 0, y: 0 },
+    })
+  }
 
   // Filter topics based on search
   useEffect(() => {
@@ -106,7 +164,12 @@ export function LobbyInterface({ topics, onTopicClick, onCreateTopic }: LobbyInt
       </div>
 
       {/* Thought Nodes Canvas */}
-      <div className="relative min-h-[80vh] overflow-hidden">
+      <div
+        className="relative min-h-[80vh] overflow-hidden"
+        onMouseMove={handleDragMove}
+        onMouseUp={handleDragEnd}
+        onMouseLeave={handleDragEnd}
+      >
         {/* Background Pattern */}
         <div className="absolute inset-0 opacity-5">
           <div
@@ -130,6 +193,8 @@ export function LobbyInterface({ topics, onTopicClick, onCreateTopic }: LobbyInt
               size={position.size}
               position={{ x: position.x, y: position.y }}
               onClick={onTopicClick}
+              onDragStart={(e) => handleDragStart(index, e)}
+              isDragging={dragState.isDragging && dragState.dragIndex === index}
             />
           )
         })}

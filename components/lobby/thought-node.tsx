@@ -1,5 +1,7 @@
 "use client"
 
+import type React from "react"
+
 import { useState } from "react"
 import { Card } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -11,9 +13,11 @@ interface ThoughtNodeProps {
   size: "small" | "medium" | "large"
   position: { x: number; y: number }
   onClick: (topic: Topic) => void
+  onDragStart?: (event: React.MouseEvent) => void
+  isDragging?: boolean
 }
 
-export function ThoughtNode({ topic, size, position, onClick }: ThoughtNodeProps) {
+export function ThoughtNode({ topic, size, position, onClick, onDragStart, isDragging }: ThoughtNodeProps) {
   const [isHovered, setIsHovered] = useState(false)
 
   const sizeClasses = {
@@ -43,13 +47,28 @@ export function ThoughtNode({ topic, size, position, onClick }: ThoughtNodeProps
 
   const activityLevel = getActivityLevel(topic.participantCount)
 
+  const handleMouseDown = (e: React.MouseEvent) => {
+    if (onDragStart) {
+      e.preventDefault()
+      onDragStart(e)
+    }
+  }
+
+  const handleClick = (e: React.MouseEvent) => {
+    if (!isDragging) {
+      onClick(topic)
+    }
+  }
+
   return (
     <div
       className="absolute transition-all duration-500 ease-out"
       style={{
         left: `${position.x}%`,
         top: `${position.y}%`,
-        transform: isHovered ? "scale(1.05)" : "scale(1)",
+        transform: isHovered && !isDragging ? "scale(1.05)" : "scale(1)",
+        cursor: isDragging ? "grabbing" : "grab",
+        zIndex: isDragging ? 50 : 1,
       }}
     >
       <Card
@@ -61,10 +80,12 @@ export function ThoughtNode({ topic, size, position, onClick }: ThoughtNodeProps
           ${size === "large" ? "animate-float" : ""}
           ${size === "medium" ? "animate-float [animation-delay:1s]" : ""}
           ${size === "small" ? "animate-float [animation-delay:2s]" : ""}
+          ${isDragging ? "shadow-2xl shadow-primary/30" : ""}
         `}
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
-        onClick={() => onClick(topic)}
+        onMouseDown={handleMouseDown}
+        onClick={handleClick}
       >
         <div className="h-full flex flex-col justify-between">
           <div className="space-y-2">
