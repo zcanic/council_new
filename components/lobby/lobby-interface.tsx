@@ -47,20 +47,21 @@ export function LobbyInterface({ topics, onTopicClick, onCreateTopic }: LobbyInt
         const size = topic.participantCount >= 15 ? "large" : topic.participantCount >= 8 ? "medium" : "small"
 
         do {
-          const cardWidth = size === "large" ? 16 : size === "medium" ? 14 : 12 // rem units
-          const cardHeight = size === "large" ? 10 : size === "medium" ? 9 : 8
+          const cardWidthPercent = size === "large" ? 16 : size === "medium" ? 14 : 12 // % of container
+          const cardHeightPercent = size === "large" ? 10 : size === "medium" ? 9 : 8
 
           position = {
-            x: Math.random() * (85 - cardWidth) + cardWidth / 2, // Account for card width
-            y: Math.random() * (75 - cardHeight) + cardHeight / 2, // Account for card height
+            x: Math.random() * (90 - cardWidthPercent) + 5, // Keep within 5-90% bounds
+            y: Math.random() * (80 - cardHeightPercent) + 10, // Keep within 10-80% bounds
             size,
           }
           attempts++
         } while (
-          attempts < 50 &&
+          attempts < 100 &&
           positions.some((pos) => {
             const distance = Math.sqrt(Math.pow(pos.x - position.x, 2) + Math.pow(pos.y - position.y, 2))
-            return distance < minDistance
+            const dynamicMinDistance = size === "large" ? 30 : size === "medium" ? 25 : 20 // Dynamic min distance based on size
+            return distance < dynamicMinDistance
           })
         )
 

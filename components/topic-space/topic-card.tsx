@@ -44,25 +44,25 @@ export function TopicCard({ topic, isCollapsed = false, onToggleCollapse, classN
         <div className="space-y-4">
           <div className="flex items-center justify-center gap-2">
             <h1 className="text-2xl font-bold text-balance">{topic.title}</h1>
-            {topic.status === "active" && <Sparkles className="w-6 h-6 text-primary" />}
-            {topic.status === "locked" && <Lock className="w-6 h-6 text-muted-foreground" />}
+            {topic.status === "active" && <Sparkles className="w-6 h-6 text-primary flex-shrink-0" />}
+            {topic.status === "locked" && <Lock className="w-6 h-6 text-muted-foreground flex-shrink-0" />}
           </div>
           <div className="w-20 h-0.5 bg-primary mx-auto"></div>
         </div>
 
-        <p className="text-muted-foreground leading-relaxed text-pretty max-w-2xl">{topic.description}</p>
+        <p className="text-muted-foreground leading-relaxed text-pretty max-w-2xl mx-auto">{topic.description}</p>
 
-        <div className="flex items-center justify-center gap-6 text-sm">
-          <div className="flex items-center gap-2 text-muted-foreground">
-            <Users className="w-4 h-4" />
+        <div className="flex flex-wrap items-center justify-center gap-4 text-sm">
+          <div className="flex items-center gap-2 text-muted-foreground whitespace-nowrap">
+            <Users className="w-4 h-4 flex-shrink-0" />
             <span>{topic.participantCount} 人参与</span>
           </div>
-          <div className="flex items-center gap-2 text-muted-foreground">
-            <MessageCircle className="w-4 h-4" />
+          <div className="flex items-center gap-2 text-muted-foreground whitespace-nowrap">
+            <MessageCircle className="w-4 h-4 flex-shrink-0" />
             <span>第 {topic.roundCount} 轮讨论</span>
           </div>
-          <div className="flex items-center gap-2 text-muted-foreground">
-            <Clock className="w-4 h-4" />
+          <div className="flex items-center gap-2 text-muted-foreground whitespace-nowrap">
+            <Clock className="w-4 h-4 flex-shrink-0" />
             <span>{Math.floor((Date.now() - topic.createdAt.getTime()) / (1000 * 60 * 60 * 24))} 天前</span>
           </div>
         </div>

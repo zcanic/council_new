@@ -21,9 +21,9 @@ export function ThoughtNode({ topic, size, position, onClick, onDragStart, isDra
   const [isHovered, setIsHovered] = useState(false)
 
   const sizeClasses = {
-    small: "w-48 h-32",
-    medium: "w-56 h-36",
-    large: "w-64 h-40",
+    small: "w-48 h-36 min-h-0",
+    medium: "w-56 h-40 min-h-0",
+    large: "w-64 h-44 min-h-0",
   }
 
   const getStatusColor = (status: Topic["status"]) => {
