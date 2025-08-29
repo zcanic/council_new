@@ -1,72 +1,22 @@
 "use client"
 
-import { useState } from "react"
-import { LobbyInterface } from "@/components/lobby/lobby-interface"
-import { TopicSpace } from "@/components/topic-space/topic-space"
-import { CreateTopicModal } from "@/components/modals/create-topic-modal"
-import { mockTopics, getTopicWithDetails } from "@/data/mockData"
-import type { Topic, DiscussionState } from "@/types"
+import { useEffect } from "react"
+import { useRouter } from "next/navigation"
 
 export default function HomePage() {
-  const [discussionState, setDiscussionState] = useState<DiscussionState>({
-    viewMode: "lobby",
-  })
-  const [showCreateModal, setShowCreateModal] = useState(false)
-  const [topics, setTopics] = useState<Topic[]>(mockTopics)
+  const router = useRouter()
 
-  const handleTopicClick = (topic: Topic) => {
-    setDiscussionState({
-      currentTopic: topic,
-      viewMode: "topic",
-    })
-  }
-
-  const handleBackToLobby = () => {
-    setDiscussionState({
-      viewMode: "lobby",
-    })
-  }
-
-  const handleCreateTopic = () => {
-    setShowCreateModal(true)
-  }
-
-  const handleTopicCreated = (newTopic: Omit<Topic, "id" | "createdAt" | "participantCount" | "roundCount">) => {
-    const topic: Topic = {
-      ...newTopic,
-      id: Date.now().toString(),
-      createdAt: new Date(),
-      participantCount: 1,
-      roundCount: 1,
-    }
-    setTopics((prev) => [topic, ...prev])
-    setShowCreateModal(false)
-  }
-
-  const handleAddComment = (roundId: string, position: number) => {
-    console.log("Add comment to round:", roundId, "at position:", position)
-  }
-
-  if (discussionState.viewMode === "topic" && discussionState.currentTopic) {
-    const topicWithDetails = getTopicWithDetails(discussionState.currentTopic.id)
-    return (
-      <TopicSpace
-        topic={discussionState.currentTopic}
-        rounds={topicWithDetails?.rounds || []}
-        onBack={handleBackToLobby}
-        onAddComment={handleAddComment}
-      />
-    )
-  }
+  useEffect(() => {
+    // 重定向到演示页面
+    router.push("/demo")
+  }, [router])
 
   return (
-    <>
-      <LobbyInterface topics={topics} onTopicClick={handleTopicClick} onCreateTopic={handleCreateTopic} />
-      <CreateTopicModal
-        open={showCreateModal}
-        onClose={() => setShowCreateModal(false)}
-        onSubmit={handleTopicCreated}
-      />
-    </>
+    <div className="min-h-screen flex items-center justify-center bg-background">
+      <div className="text-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+        <p className="text-muted-foreground">正在跳转到演示页面...</p>
+      </div>
+    </div>
   )
 }
