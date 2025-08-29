@@ -93,7 +93,7 @@ export function TopicSpace({ topic, onBack }: TopicSpaceProps) {
                       onClick={() => handleTopicSelect(index)}
                       className={`px-6 py-3 rounded-full text-sm font-medium transition-all duration-300 ${
                         index === selectedTopicIndex
-                          ? "bg-council-sage text-white shadow-lg scale-105"
+                          ? "bg-council-sage text-council-charcoal shadow-lg scale-105"
                           : "bg-council-cream hover:bg-council-cream/80 text-council-forest hover:scale-102"
                       }`}
                     >

@@ -53,7 +53,7 @@ export function ParticipantIndicator({ participants, onlineCount, connectionStat
           ))}
 
           {onlineParticipants.length > 5 && (
-            <div className="w-6 h-6 rounded-full bg-council-sage text-white text-xs flex items-center justify-center border-2 border-background">
+            <div className="w-6 h-6 rounded-full bg-council-sage text-council-charcoal text-xs flex items-center justify-center border-2 border-background">
               +{onlineParticipants.length - 5}
             </div>
           )}

@@ -70,7 +70,7 @@ export function SummaryGenerator({
         <Button
           onClick={handleGenerateSummary}
           disabled={isGeneratingSummary}
-          className="w-full bg-council-sage hover:bg-council-sage/90 text-white"
+          className="w-full bg-council-sage hover:bg-council-sage/90 text-council-charcoal"
         >
           {isGeneratingSummary ? (
             <>
