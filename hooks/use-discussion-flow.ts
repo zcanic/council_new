@@ -1,133 +1,89 @@
 "use client"
 
-import { useState, useCallback, useEffect } from "react"
-import { useAIIntegration } from "./use-ai-integration"
-import type { Topic, Round, Comment, DiscussionState } from "@/lib/types"
+import { useState } from "react"
+import type { DiscussionRound, Comment, Topic } from "@/types"
 
-export function useDiscussionFlow(initialTopic: Topic) {
-  const [discussionState, setDiscussionState] = useState<DiscussionState>({
-    currentTopic: initialTopic,
-    rounds: [],
-    activeRoundId: null,
-    participantCount: 0,
-    totalComments: 0,
+export function useDiscussionFlow(topic: Topic) {
+  const [discussionState, setDiscussionState] = useState({
+    currentRoundIndex: 0,
+    rounds: [] as DiscussionRound[],
+    comments: [] as Comment[]
   })
+  const [isLoading, setIsLoading] = useState(false)
+  const [isGeneratingSummary, setIsGeneratingSummary] = useState(false)
 
-  const { generateSummary, isGeneratingSummary } = useAIIntegration()
-
-  // Initialize first round
-  useEffect(() => {
-    if (discussionState.rounds.length === 0) {
-      const firstRound: Round = {
-        id: `round-${Date.now()}`,
-        topicId: initialTopic.id,
-        roundNumber: 1,
-        comments: [],
-        status: "active",
-        createdAt: new Date(),
-      }
-      setDiscussionState((prev) => ({
-        ...prev,
-        rounds: [firstRound],
-        activeRoundId: firstRound.id,
-      }))
-    }
-  }, [initialTopic.id, discussionState.rounds.length])
-
-  const addComment = useCallback(
-    (content: string, authorName: string, position: number) => {
-      const newComment: Comment = {
-        id: `comment-${Date.now()}`,
-        topicId: discussionState.currentTopic.id,
-        roundId: discussionState.activeRoundId!,
-        content,
-        authorId: `user-${Date.now()}`,
-        authorName,
-        createdAt: new Date(),
-        position,
-      }
-
-      setDiscussionState((prev) => {
-        const updatedRounds = prev.rounds.map((round) => {
-          if (round.id === prev.activeRoundId) {
-            const updatedComments = [...round.comments, newComment]
-            return {
-              ...round,
-              comments: updatedComments,
-            }
-          }
-          return round
-        })
-
-        return {
-          ...prev,
-          rounds: updatedRounds,
-          totalComments: prev.totalComments + 1,
+  const getCurrentRound = () => {
+    // 返回模拟的当前轮次数据
+    return {
+      id: `round-${topic.id}-1`,
+      topicId: topic.id,
+      roundNumber: 1,
+      status: "active" as const,
+      startTime: new Date(),
+      commentCount: 8,
+      maxComments: 10,
+      aiSummary: "这是模拟的AI总结内容",
+      convergenceScore: 0.75,
+      comments: [
+        {
+          id: "mock-comment-1",
+          topicId: topic.id,
+          roundId: `round-${topic.id}-1`,
+          userId: "1",
+          user: {
+            id: "1",
+            username: "tech_enthusiast",
+            email: "tech@example.com",
+            avatar: "/placeholder-user.jpg",
+            status: "active" as const,
+            lastSeen: new Date()
+          },
+          content: "这是模拟的评论内容，用于演示界面效果。",
+          positionType: "neutral" as const,
+          isAnonymous: false,
+          sentimentScore: 0.6,
+          qualityScore: 0.8,
+          likeCount: 5,
+          replyCount: 2,
+          status: "active" as const,
+          createdAt: new Date()
         }
-      })
-
-      return newComment
-    },
-    [discussionState.currentTopic.id, discussionState.activeRoundId],
-  )
-
-  const triggerWisdomDistillation = useCallback(async () => {
-    const activeRound = discussionState.rounds.find((r) => r.id === discussionState.activeRoundId)
-    if (!activeRound || activeRound.comments.length < 10) {
-      return null
+      ]
     }
+  }
 
-    // Generate AI summary
-    const summary = await generateSummary(
-      activeRound.comments,
-      discussionState.currentTopic.title,
-      activeRound.roundNumber,
-    )
+  const canTriggerDistillation = () => {
+    const round = getCurrentRound()
+    return round && round.comments.length >= 5
+  }
 
-    if (!summary) return null
+  const triggerWisdomDistillation = async () => {
+    setIsGeneratingSummary(true)
+    await new Promise(resolve => setTimeout(resolve, 2000))
+    setIsGeneratingSummary(false)
+    return { success: true }
+  }
 
-    // Lock current round
-    const lockedRound: Round = {
-      ...activeRound,
-      status: "locked",
-      summary,
+  const switchToRound = (roundId: string) => {
+    // 在静态版本中，我们不需要实际切换轮次
+    console.log("Switching to round:", roundId)
+  }
+
+  const addComment = async (content: string, authorName: string, position: number) => {
+    setIsLoading(true)
+    await new Promise(resolve => setTimeout(resolve, 500))
+    setIsLoading(false)
+    
+    const newComment = {
+      id: `mock-comment-${Date.now()}`,
+      content,
+      authorName,
+      position,
+      createdAt: new Date()
     }
-
-    // Create new round based on summary
-    const newRound: Round = {
-      id: `round-${Date.now()}`,
-      topicId: discussionState.currentTopic.id,
-      roundNumber: activeRound.roundNumber + 1,
-      comments: [],
-      status: "active",
-      createdAt: new Date(),
-      parentSummary: summary,
-    }
-
-    setDiscussionState((prev) => ({
-      ...prev,
-      rounds: prev.rounds.map((r) => (r.id === activeRound.id ? lockedRound : r)).concat(newRound),
-      activeRoundId: newRound.id,
-    }))
-
-    return { summary, newRound }
-  }, [discussionState, generateSummary])
-
-  const switchToRound = useCallback((roundId: string) => {
-    setDiscussionState((prev) => ({
-      ...prev,
-      activeRoundId: roundId,
-    }))
-  }, [])
-
-  const getCurrentRound = useCallback(() => {
-    return discussionState.rounds.find((r) => r.id === discussionState.activeRoundId)
-  }, [discussionState.rounds, discussionState.activeRoundId])
-
-  const canTriggerDistillation = useCallback(() => {
-    const currentRound = getCurrentRound()
-    return currentRound && currentRound.comments.length >= 10 && currentRound.status === "active"
-  }, [getCurrentRound])
+    
+    return newComment
+  }
 
   return {
     discussionState,
@@ -136,6 +92,6 @@ export function useDiscussionFlow(initialTopic: Topic) {
     switchToRound,
     getCurrentRound,
     canTriggerDistillation,
-    isGeneratingSummary,
+    isGeneratingSummary
   }
 }

@@ -10,14 +10,16 @@ import { RoundHistoryView } from "./round-history-view"
 import { TypingIndicator } from "@/components/realtime/typing-indicator"
 import { useDiscussionFlow } from "@/hooks/use-discussion-flow"
 import { useRealtime } from "@/hooks/use-realtime"
-import type { Topic } from "@/lib/types"
+import type { Topic } from "@/types"
 
 interface TopicSpaceProps {
   topic: Topic
+  rounds: any[]
   onBack: () => void
+  onAddComment: (roundId: string, position: number) => void
 }
 
-export function TopicSpace({ topic, onBack }: TopicSpaceProps) {
+export function TopicSpace({ topic, rounds, onBack, onAddComment }: TopicSpaceProps) {
   const [isTopicCollapsed, setIsTopicCollapsed] = useState(false)
   const [showHistory, setShowHistory] = useState(false)
   const [selectedTopicIndex, setSelectedTopicIndex] = useState(0)
@@ -199,7 +201,7 @@ export function TopicSpace({ topic, onBack }: TopicSpaceProps) {
 
             <div className="px-8 pb-12">
               <div className="max-w-6xl mx-auto space-y-12">
-                <TypingIndicator typingParticipants={typingParticipants} />
+                <TypingIndicator typingParticipants={typingParticipants.map(name => ({ id: name, name, isTyping: true, isOnline: true }))} />
 
                 {/* Enhanced AI Summary Generator */}
                 {currentRound && canTriggerDistillation() && (

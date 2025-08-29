@@ -5,7 +5,7 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Sparkles, TrendingUp, AlertTriangle, HelpCircle, ChevronDown, ChevronUp } from "lucide-react"
 import { useState } from "react"
-import type { AISummary } from "@/lib/types"
+import type { AISummary } from "@/types"
 
 interface SummaryCardProps {
   summary: AISummary
@@ -34,11 +34,11 @@ export function SummaryCard({ summary, onStartNewRound, className = "" }: Summar
             </div>
             <div>
               <h3 className="text-lg font-semibold">AI 智慧总结</h3>
-              <p className="text-sm text-muted-foreground">{new Date(summary.generatedAt).toLocaleString("zh-CN")}</p>
+              <p className="text-sm text-muted-foreground">{summary.generatedAt ? new Date(summary.generatedAt).toLocaleString("zh-CN") : '刚刚'}</p>
             </div>
           </div>
           <Badge variant="secondary" className="bg-primary/20 text-primary">
-            第 {summary.roundId.split("-")[1]} 轮
+            第 {(summary.roundId || '1-1').split("-")[1]} 轮
           </Badge>
         </div>
 
@@ -62,14 +62,14 @@ export function SummaryCard({ summary, onStartNewRound, className = "" }: Summar
           {isExpanded && (
             <div className="space-y-4 animate-in slide-in-from-top-2 duration-300">
               {/* Consensus Points */}
-              {summary.consensus.length > 0 && (
+              {(summary.consensus || []).length > 0 && (
                 <div className="space-y-2">
                   <div className="flex items-center gap-2">
                     <TrendingUp className="w-4 h-4 text-green-600" />
                     <h4 className="text-sm font-medium">主要共识</h4>
                   </div>
                   <ul className="space-y-1 ml-6">
-                    {summary.consensus.map((point, index) => (
+                    {(summary.consensus || []).map((point, index) => (
                       <li key={index} className="text-sm text-muted-foreground">
                         • {point}
                       </li>
@@ -79,14 +79,14 @@ export function SummaryCard({ summary, onStartNewRound, className = "" }: Summar
               )}
 
               {/* Disagreements */}
-              {summary.disagreements.length > 0 && (
+              {(summary.disagreements || []).length > 0 && (
                 <div className="space-y-2">
                   <div className="flex items-center gap-2">
                     <AlertTriangle className="w-4 h-4 text-orange-600" />
                     <h4 className="text-sm font-medium">主要分歧</h4>
                   </div>
                   <ul className="space-y-1 ml-6">
-                    {summary.disagreements.map((point, index) => (
+                    {(summary.disagreements || []).map((point, index) => (
                       <li key={index} className="text-sm text-muted-foreground">
                         • {point}
                       </li>
@@ -96,14 +96,14 @@ export function SummaryCard({ summary, onStartNewRound, className = "" }: Summar
               )}
 
               {/* New Questions */}
-              {summary.newQuestions.length > 0 && (
+              {(summary.newQuestions || []).length > 0 && (
                 <div className="space-y-2">
                   <div className="flex items-center gap-2">
                     <HelpCircle className="w-4 h-4 text-blue-600" />
                     <h4 className="text-sm font-medium">新的问题</h4>
                   </div>
                   <ul className="space-y-1 ml-6">
-                    {summary.newQuestions.map((question, index) => (
+                    {(summary.newQuestions || []).map((question, index) => (
                       <li key={index} className="text-sm text-muted-foreground">
                         • {question}
                       </li>

@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Label } from "@/components/ui/label"
-import type { Topic } from "@/lib/types"
+import type { Topic } from "@/types"
 
 interface CreateTopicModalProps {
   open: boolean
@@ -32,7 +32,10 @@ export function CreateTopicModal({ open, onClose, onSubmit }: CreateTopicModalPr
         title: title.trim(),
         description: description.trim(),
         status: "active",
-        createdBy: "current-user", // In real app, get from auth
+        createdBy: "current-user",
+        creatorId: "current-user-id",
+        currentRound: 1,
+        maxRounds: 3
       })
 
       // Reset form

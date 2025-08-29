@@ -3,7 +3,7 @@
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Clock, Users, MessageSquare, Sparkles, Lock } from "lucide-react"
-import type { Round } from "@/lib/types"
+import type { Round } from "@/types"
 
 interface DiscussionNavigatorProps {
   rounds: Round[]

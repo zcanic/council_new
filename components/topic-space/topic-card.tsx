@@ -4,7 +4,7 @@ import { Card } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Users, MessageCircle, Clock, Lock, Sparkles } from "lucide-react"
-import type { Topic } from "@/lib/types"
+import type { Topic } from "@/types"
 
 interface TopicCardProps {
   topic: Topic

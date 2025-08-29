@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button"
 import { Plus } from "lucide-react"
 import { CommentCard } from "./comment-card"
 import { CommentForm } from "../cards/comment-form"
-import type { Round } from "@/lib/types"
+import type { Round } from "@/types"
 
 interface CommentLoopProps {
   round: Round

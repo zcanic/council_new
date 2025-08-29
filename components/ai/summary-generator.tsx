@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Loader2, Sparkles, Brain, MessageSquare } from "lucide-react"
 import { useAIIntegration } from "@/hooks/use-ai-integration"
-import type { Comment } from "@/lib/types"
+import type { Comment } from "@/types"
 import type { SummaryResponse } from "@/lib/ai-service"
 
 interface SummaryGeneratorProps {

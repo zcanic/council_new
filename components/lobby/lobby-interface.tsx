@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Plus, Search, Filter } from "lucide-react"
 import { ThoughtNode } from "./thought-node"
-import type { Topic } from "@/lib/types"
+import type { Topic } from "@/types"
 
 interface LobbyInterfaceProps {
   topics: Topic[]

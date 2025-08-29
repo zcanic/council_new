@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { X, MessageCircle, Sparkles, Clock, Users } from "lucide-react"
-import type { Round } from "@/lib/types"
+import type { Round } from "@/types"
 
 interface RoundHistoryViewProps {
   rounds: Round[]

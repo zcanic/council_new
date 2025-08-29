@@ -6,7 +6,7 @@ import { useState } from "react"
 import { Card } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Users, MessageCircle, Clock, Sparkles } from "lucide-react"
-import type { Topic } from "@/lib/types"
+import type { Topic } from "@/types"
 
 interface ThoughtNodeProps {
   topic: Topic

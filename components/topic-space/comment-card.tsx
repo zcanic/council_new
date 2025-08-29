@@ -4,7 +4,7 @@ import { Card } from "@/components/ui/card"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import { Heart, Reply, MoreHorizontal, Clock } from "lucide-react"
-import type { Comment } from "@/lib/types"
+import type { Comment } from "@/types"
 
 interface CommentCardProps {
   comment?: Comment
