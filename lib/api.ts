@@ -1,6 +1,15 @@
 import { Topic, Comment, DiscussionRound, CreateTopicData, CreateCommentData } from '@/types'
+import { mockTopics, getAllTopicsWithDetails, getTopicWithDetails } from '@/data/mockData'
 
 const API_BASE = '/api'
+
+// Mock 模式状态
+let useMockData = false
+
+export const setMockMode = (enabled: boolean) => {
+  useMockData = enabled
+  console.log(`Mock mode ${enabled ? 'enabled' : 'disabled'}`)
+}
 
 export interface ApiResponse<T> {
   success: boolean
@@ -12,6 +21,11 @@ export interface ApiResponse<T> {
 export const topicApi = {
   // 获取话题列表
   getTopics: async (sortBy?: string): Promise<Topic[]> => {
+    if (useMockData) {
+      console.log('Using mock topics data')
+      return mockTopics
+    }
+    
     const url = sortBy ? `${API_BASE}/topics?sortBy=${sortBy}` : `${API_BASE}/topics`
     const response = await fetch(url)
     const result: ApiResponse<Topic[]> = await response.json()
@@ -42,6 +56,15 @@ export const topicApi = {
 
   // 获取话题详情
   getTopic: async (id: string): Promise<Topic & { rounds: DiscussionRound[] }> => {
+    if (useMockData) {
+      console.log('Using mock topic details')
+      const mockTopic = getTopicWithDetails(id)
+      if (!mockTopic) {
+        throw new Error('Topic not found in mock data')
+      }
+      return mockTopic
+    }
+    
     const response = await fetch(`${API_BASE}/topics/${id}`)
     const result: ApiResponse<Topic & { rounds: DiscussionRound[] }> = await response.json()
     

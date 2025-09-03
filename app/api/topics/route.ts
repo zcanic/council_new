@@ -37,14 +37,10 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ success: true, data: allTopics })
   } catch (error) {
     console.error('Get topics error:', error)
-    
-    // 数据库连接失败时返回模拟数据
-    console.log('Using mock data as fallback')
-    return NextResponse.json({ 
-      success: true, 
-      data: mockTopics,
-      _fallback: true // 标记为降级数据
-    })
+    return NextResponse.json(
+      { success: false, error: 'Failed to fetch topics' },
+      { status: 500 }
+    )
   }
 }
 
@@ -102,27 +98,9 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ success: true, data: newTopic })
   } catch (error) {
     console.error('Create topic error:', error)
-    
-    // 数据库连接失败时返回模拟响应
-    console.log('Using mock response for topic creation')
-    const mockTopic = {
-      id: `mock_topic_${Date.now()}`,
-      title: body.title,
-      description: body.description,
-      createdAt: new Date(),
-      participantCount: 1,
-      roundCount: 1,
-      status: 'active' as const,
-      createdBy: body.createdBy,
-      creatorId: 'mock_user',
-      currentRound: 1,
-      maxRounds: body.maxRounds || 3
-    }
-    
-    return NextResponse.json({ 
-      success: true, 
-      data: mockTopic,
-      _fallback: true // 标记为降级数据
-    })
+    return NextResponse.json(
+      { success: false, error: 'Failed to create topic' },
+      { status: 500 }
+    )
   }
 }

@@ -4,7 +4,9 @@ import { useState, useEffect } from "react"
 import { LobbyInterface } from "@/components/lobby/lobby-interface"
 import { TopicSpace } from "@/components/topic-space/topic-space"
 import { CreateTopicModal } from "@/components/modals/create-topic-modal"
+import { Button } from "@/components/ui/button"
 import { useApi } from "@/hooks/use-api"
+import { setMockMode } from "@/lib/api"
 import type { Topic, DiscussionState } from "@/types"
 
 export default function DemoPage() {
@@ -14,6 +16,7 @@ export default function DemoPage() {
   })
   const [showCreateModal, setShowCreateModal] = useState(false)
   const [topics, setTopics] = useState<Topic[]>([])
+  const [isMockMode, setIsMockMode] = useState(false)
 
   useEffect(() => {
     loadTopics()
@@ -50,6 +53,20 @@ export default function DemoPage() {
 
   const handleAddComment = (roundId: string, position: number) => {
     console.log("Adding comment to round:", roundId, "at position:", position)
+  }
+
+  const toggleMockMode = () => {
+    const newMockMode = !isMockMode
+    setIsMockMode(newMockMode)
+    setMockMode(newMockMode)
+    
+    // 重新加载数据
+    loadTopics()
+    
+    // 如果当前在话题详情页，刷新话题数据
+    if (discussionState.viewMode === 'topic' && discussionState.currentTopic) {
+      handleTopicClick(discussionState.currentTopic)
+    }
   }
 
   return (
@@ -97,6 +114,18 @@ export default function DemoPage() {
           <div>• 真实用户互动</div>
           {loading && <div className="text-blue-500">• 加载中...</div>}
           {error && <div className="text-red-500">• 错误: {error}</div>}
+        </div>
+        
+        {/* Mock 模式切换按钮 */}
+        <div className="mt-3 pt-3 border-t border-border/50">
+          <Button
+            variant={isMockMode ? "default" : "outline"}
+            size="sm"
+            onClick={toggleMockMode}
+            className="w-full text-xs"
+          >
+            {isMockMode ? '✅ Mock模式' : 'Mock数据'}
+          </Button>
         </div>
       </div>
     </>

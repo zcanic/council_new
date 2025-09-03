@@ -63,26 +63,9 @@ export async function GET(
     })
   } catch (error) {
     console.error('Get topic error:', error)
-    
-    // 数据库连接失败时返回模拟数据
-    console.log('Using mock data as fallback')
-    const topicId = params.id
-    const mockTopic = getTopicWithDetails(topicId)
-    
-    if (mockTopic) {
-      return NextResponse.json({ 
-        success: true, 
-        data: mockTopic,
-        _fallback: true // 标记为降级数据
-      })
-    }
-    
-    // 如果模拟数据中也没有找到，返回第一个话题
-    const fallbackTopic = getTopicWithDetails(mockTopics[0].id)
-    return NextResponse.json({ 
-      success: true, 
-      data: fallbackTopic,
-      _fallback: true // 标记为降级数据
-    })
+    return NextResponse.json(
+      { success: false, error: 'Failed to fetch topic' },
+      { status: 500 }
+    )
   }
 }
