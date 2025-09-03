@@ -1,27 +1,42 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { LobbyInterface } from "@/components/lobby/lobby-interface"
 import { TopicSpace } from "@/components/topic-space/topic-space"
 import { CreateTopicModal } from "@/components/modals/create-topic-modal"
-import { mockTopics } from "@/data/mockData"
-import { getAllEnhancedTopicsWithDetails, getEnhancedTopicWithDetails } from "@/data/enhancedMockData"
+import { useApi } from "@/hooks/use-api"
 import type { Topic, DiscussionState } from "@/types"
 
 export default function DemoPage() {
+  const { getTopics, createTopic, getTopic, loading, error } = useApi()
   const [discussionState, setDiscussionState] = useState<DiscussionState>({
     viewMode: "lobby",
   })
   const [showCreateModal, setShowCreateModal] = useState(false)
-  const [topics, setTopics] = useState<Topic[]>(mockTopics)
+  const [topics, setTopics] = useState<Topic[]>([])
 
-  const handleTopicClick = (topic: Topic) => {
-    const enhancedTopic = getEnhancedTopicWithDetails(topic.id)
-    if (enhancedTopic) {
+  useEffect(() => {
+    loadTopics()
+  }, [])
+
+  const loadTopics = async () => {
+    try {
+      const topicsData = await getTopics()
+      setTopics(topicsData)
+    } catch (err) {
+      console.error('Failed to load topics:', err)
+    }
+  }
+
+  const handleTopicClick = async (topic: Topic) => {
+    try {
+      const topicWithDetails = await getTopic(topic.id)
       setDiscussionState({
-        currentTopic: enhancedTopic,
+        currentTopic: topicWithDetails,
         viewMode: "topic",
       })
+    } catch (err) {
+      console.error('Failed to load topic details:', err)
     }
   }
 
@@ -36,9 +51,6 @@ export default function DemoPage() {
   const handleAddComment = (roundId: string, position: number) => {
     console.log("Adding comment to round:", roundId, "at position:", position)
   }
-
-  // 获取所有增强的话题数据用于演示
-  const enhancedTopics = getAllEnhancedTopicsWithDetails()
 
   return (
     <>
@@ -62,32 +74,29 @@ export default function DemoPage() {
       <CreateTopicModal
         open={showCreateModal}
         onOpenChange={setShowCreateModal}
-        onSubmit={(topicData) => {
-          const newTopic: Topic = {
-            id: Date.now().toString(),
-            ...topicData,
-            createdAt: new Date(),
-            participantCount: 0,
-            roundCount: 0,
-            status: "active",
-            createdBy: "current_user",
-            creatorId: "current_user_id",
-            currentRound: 0,
-            maxRounds: 3,
+        onSubmit={async (topicData) => {
+          try {
+            const newTopic = await createTopic({
+              ...topicData,
+              createdBy: "current_user"
+            })
+            setTopics([...topics, newTopic])
+            setShowCreateModal(false)
+          } catch (err) {
+            console.error('Failed to create topic:', err)
           }
-          setTopics([...topics, newTopic])
-          setShowCreateModal(false)
         }}
       />
 
-      {/* 演示控制面板 */}
+      {/* 状态指示器 */}
       <div className="fixed bottom-4 right-4 bg-background/80 backdrop-blur-sm border border-border rounded-lg p-4 shadow-lg z-50">
-        <h3 className="text-sm font-semibold mb-2">🎯 演示模式</h3>
+        <h3 className="text-sm font-semibold mb-2">🎯 实时模式</h3>
         <div className="space-y-1 text-xs text-muted-foreground">
-          <div>• 包含多轮讨论历史</div>
-          <div>• 完整的AI总结示例</div>
-          <div>• 丰富的评论数据</div>
-          <div>• 点击议题查看详情</div>
+          <div>• 实时数据库连接</div>
+          <div>• 动态AI总结生成</div>
+          <div>• 真实用户互动</div>
+          {loading && <div className="text-blue-500">• 加载中...</div>}
+          {error && <div className="text-red-500">• 错误: {error}</div>}
         </div>
       </div>
     </>

@@ -1,0 +1,38 @@
+{
+  "version": 3,
+  "buildCommand": "npm run build",
+  "devCommand": "npm run dev",
+  "installCommand": "npm install",
+  "framework": "nextjs",
+  "outputDirectory": ".next",
+  "functions": {
+    "app/api/**/*.ts": {
+      "maxDuration": 30
+    }
+  },
+  "env": {
+    "POSTGRES_URL": "@postgres_url",
+    "POSTGRES_PRISMA_URL": "@postgres_prisma_url", 
+    "POSTGRES_URL_NO_SSL": "@postgres_url_no_ssl",
+    "POSTGRES_URL_NON_POOLING": "@postgres_url_non_pooling",
+    "POSTGRES_USER": "@postgres_user",
+    "POSTGRES_HOST": "@postgres_host",
+    "POSTGRES_PASSWORD": "@postgres_password",
+    "POSTGRES_DATABASE": "@postgres_database",
+    "AI_BASE_URL": "@ai_base_url",
+    "AI_API_KEY": "@ai_api_key", 
+    "AI_MODEL": "@ai_model"
+  },
+  "build": {
+    "env": {
+      "POSTGRES_URL": "@postgres_url",
+      "POSTGRES_PRISMA_URL": "@postgres_prisma_url",
+      "POSTGRES_URL_NO_SSL": "@postgres_url_no_ssl",
+      "POSTGRES_URL_NON_POOLING": "@postgres_url_non_pooling",
+      "POSTGRES_USER": "@postgres_user",
+      "POSTGRES_HOST": "@postgres_host",
+      "POSTGRES_PASSWORD": "@postgres_password",
+      "POSTGRES_DATABASE": "@postgres_database"
+    }
+  }
+}
